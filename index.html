@@ -1,52 +1,18 @@
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
     <meta charset="utf-8" />
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js"
-        }
-      }
-    </script>
-    <script type="module">
-      import * as THREE from "three";
+    <title>Airoco Map</title>
+    <!-- Three.js（非モジュール）を読み込み -->
+    <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/three@0.142.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="script.js"></script>
+</head>
 
-      // サイズを指定
-      const width = 960;
-      const height = 540;
+<body>
+    <canvas id="myCanvas" width="745" height="540"></canvas>
+</body>
 
-      // レンダラーを作成
-      const renderer = new THREE.WebGLRenderer({
-        canvas: document.querySelector("#myCanvas"),
-      });
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(width, height);
-
-      // シーンを作成
-      const scene = new THREE.Scene();
-
-      // カメラを作成
-      const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(0, 0, +1000);
-
-      // 箱を作成
-      const geometry = new THREE.BoxGeometry(400, 400, 400);
-      const material = new THREE.MeshNormalMaterial();
-      const box = new THREE.Mesh(geometry, material);
-      scene.add(box);
-
-      tick();
-
-      // 毎フレーム時に実行されるループイベントです
-      function tick() {
-        box.rotation.y += 0.01;
-        renderer.render(scene, camera); // レンダリング
-
-        requestAnimationFrame(tick);
-      }
-    </script>
-  </head>
-  <body>
-    <canvas id="myCanvas"></canvas>
-  </body>
 </html>
