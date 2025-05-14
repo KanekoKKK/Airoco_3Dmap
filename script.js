@@ -38,6 +38,7 @@ function init() {
   controls.dampingFactor = 0.2;
 
   // 3Dモデルの読み込み
+  /*
   const loader = new THREE.GLTFLoader();
   let model = null;
   loader.load(
@@ -54,6 +55,30 @@ function init() {
       console.log(error);
     }
   );
+  */
+
+  // 箱を作成
+const g1 = new THREE.BoxGeometry(500, 500, 500);
+const m1 = new THREE.MeshStandardMaterial({color: 0x000000});
+const box1 = new THREE.Mesh(g1, m1);
+box1.position.set(100, 50, -200)
+scene.add(box1);
+
+const g2 = new THREE.BoxGeometry(400, 500, 500);
+const m2 = new THREE.MeshStandardMaterial({color: 0x0000FF});
+const box2 = new THREE.Mesh(g2, m2);
+scene.add(box2);
+
+  // データの取得と繁栄
+    window.addEventListener('commentUpdated', function(event) {
+    const receivedComment = event.detail.comment;
+    console.log('更新されたコメント:', receivedComment);
+    if (receivedComment == 'red') {
+      m2.color.set(0xFF0000);
+    } else {
+      m2.color.set(0x00FF00);
+    }
+  });
 
   // リアルタイムレンダリング
   tick();
