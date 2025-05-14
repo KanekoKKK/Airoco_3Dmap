@@ -15,11 +15,11 @@ function init() {
 
   // シーンを作成
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87B8C0);
+  scene.background = new THREE.Color(0x111111);
 
   // 環境光源を作成
   const ambientLight = new THREE.AmbientLight(0xffffff);
-  ambientLight.intensity = 2;
+  ambientLight.intensity = 5;
   scene.add(ambientLight);
 
   // 平行光源を作成
@@ -34,8 +34,28 @@ function init() {
 
   // カメラコントローラーを作成
   const controls = new THREE.OrbitControls(camera, canvasElement);
-  controls.enableDamping = true;
+  controls.maxPolarAngle = Math.PI * 0.5; // 下から見えないようにする
+  controls.enableDamping = true;  // 滑らかな制御
   controls.dampingFactor = 0.2;
+
+
+  // サイズ調整
+  onResize();
+  // リサイズイベント発生時に実行
+  window.addEventListener('resize', onResize);
+  function onResize() {
+    // サイズを取得
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // レンダラーのサイズを調整する
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+
+    // カメラのアスペクト比を正す
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
 
   // 3Dモデルの読み込み
   /*
@@ -59,25 +79,45 @@ function init() {
 
   var boxs = [];
   var data_num = [1, 2, 4, 5, 7, 8, 9]
-  
-  // データの取得(Co2Data[])
+
+  // データの取得と色変更(Co2Data[])
   window.addEventListener('dataUpdated', function (event) {
-    for(var i = 0; i < 7; i++){
-    const Co2Data = event.detail.data;
-    if (Co2Data[data_num[i]] >= 600) {
-      boxs[i].material.color.set(0xFF0000);
-    } else {
-      boxs[i].material.color.set(0x00FF00);
+    for (var i = 0; i < 7; i++) {
+      const Co2Data = event.detail.data;
+      if (Co2Data[data_num[i]] < 500) {
+        boxs[i].material.color.set(0x00FF00);
+      } else if (Co2Data[data_num[i]] < 550) {
+        boxs[i].material.color.set(0x44FF00);
+      } else if (Co2Data[data_num[i]] < 600) {
+        boxs[i].material.color.set(0x88FF00);
+      } else if (Co2Data[data_num[i]] < 650) {
+        boxs[i].material.color.set(0xAAFF00);
+      } else if (Co2Data[data_num[i]] < 700) {
+        boxs[i].material.color.set(0xDDFF00);
+      } else if (Co2Data[data_num[i]] < 750) {
+        boxs[i].material.color.set(0xFFFF00);
+      } else if (Co2Data[data_num[i]] < 800) {
+        boxs[i].material.color.set(0xFFDD00);
+      } else if (Co2Data[data_num[i]] < 850) {
+        boxs[i].material.color.set(0xFFBB00);
+      } else if (Co2Data[data_num[i]] < 900) {
+        boxs[i].material.color.set(0xFF9900);
+      } else if (Co2Data[data_num[i]] < 950) {
+        boxs[i].material.color.set(0xFF7700);
+      } else if (Co2Data[data_num[i]] < 1000) {
+        boxs[i].material.color.set(0xFF4400);
+      } else {
+        boxs[i].material.color.set(0xFF0000);
+      }
     }
-  }
   });
 
   // 箱を作成
   for (var i = 0; i < 7; i++) {
     const geometry = new THREE.BoxGeometry(100, 100, 100);  // 大きさ
-    const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x000000) });  // 色
+    const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00000), transparent: true, opacity: 0.5 });  // 色
     const box = new THREE.Mesh(geometry, material); // 箱
-    box.position.set(-500 +i*120,50,-200);
+    box.position.set(-500 + i * 120, 50, -200);
     boxs.push(box);
     scene.add(box);
   }

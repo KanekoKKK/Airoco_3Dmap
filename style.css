@@ -1,0 +1,8 @@
+/* 全画面用 */
+body {
+  margin: 0;
+}
+
+#myCanvas {
+  display: block;
+}
