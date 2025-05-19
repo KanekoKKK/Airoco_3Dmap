@@ -1,3 +1,6 @@
+// TODO:カメラの初期位置変える
+// ユーザがモデルを操作していないとき、モデルを回したい
+
 window.addEventListener("DOMContentLoaded", init);
 function init() {
   // レンダラーを作成
@@ -7,11 +10,6 @@ function init() {
     canvas: canvasElement,
   });
 
-  // サイズ指定
-  const width = 745;
-  const height = 540;
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(width, height);
 
   // シーンを作成
   const scene = new THREE.Scene();
@@ -29,8 +27,8 @@ function init() {
   scene.add(directionalLight);
 
   // カメラを作成
-  const camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
-  camera.position.set(0, 0, 1500);
+  const camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+  camera.position.set(0, 0, 2000); //カメラ位置
 
   // カメラコントローラーを作成
   const controls = new THREE.OrbitControls(camera, canvasElement);
@@ -39,20 +37,20 @@ function init() {
   controls.dampingFactor = 0.2;
 
 
-  // サイズ調整
-  onResize();
-  // リサイズイベント発生時に実行
-  window.addEventListener('resize', onResize);
-  function onResize() {
-    // サイズを取得
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+  resize();                                
+  window.addEventListener('resize', resize); 
+  new ResizeObserver(resize).observe(canvasElement); // ③ レイアウト変化
 
-    // レンダラーのサイズを調整する
+  function resize () {
+// Canvas の “見た目サイズ” を取得
+    const { width, height } = canvasElement.getBoundingClientRect();
+
+    
+    if (canvasElement.width === width && canvasElement.height === height) return;
+
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false); // ← 第3引数falseでCSSサイズ優先
 
-    // カメラのアスペクト比を正す
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
   }
@@ -111,13 +109,13 @@ function init() {
     }
   });
 
-/*
-x 正->エレベータホール側
-y 正->空側
-z 正->R3正面側（meijoって書いてある方）
+/* positonsの座標 [x,y,z]
+  x 正->エレベータホール側
+  y 正->空側
+  z 正->R3正面側（meijoって書いてある方）
 */
 
-//各箱オブジェクトの座標指定
+//各CO2濃度表示オブジェクトの座標指定
 const positions = [
   [-310, 75, 125],  //401
   [-310, -75, 40], //301
