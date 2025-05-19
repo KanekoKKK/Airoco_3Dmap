@@ -1,23 +1,80 @@
+<!-- 2025/05/19 23:57 カトウ -->
+<!-- アップデート日時、各部屋の詳細情報、ログ部分全てダミーデータ -->
+<!-- 3Dモデルを動かせる機能だけ -->
+
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no""/>
-    <title>Airoco Map</title>
-    <!-- Three.js（非モジュール）を読み込み -->
-    <script src=" https://unpkg.com/three@0.147.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://unpkg.com/three@0.142.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+  <title>Airoco Map</title>
 
+  <!-- Three.js（非モジュール版）-->
+  <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.142.0/examples/js/loaders/GLTFLoader.js"></script>
 
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <script src="airoco_api.js"></script>
-    <canvas id="myCanvas"></canvas>
+  <!-- ========== ヘッダ ========== -->
+  <header id="topBar">
+    <h1 class="title">Meijo University   LB-3 CO₂ Monitoring System</h1>
+
+    <!-- リロードボタン -->
+    <button id="reloadBtn">Reload</button>
+  </header>
+
+    <!-- <div id="isFetchSuccess">    > Fetch : SUCCESS</div> -->
+     
+  <!-- 更新時刻 -->
+  <div id="lastUpdate">    > Last updated: 2025-05-19 22:44 JST</div>
+
+  <!-- ========== メインレイアウト ========== -->
+  <main id="layout">
+    <!-- 3D ビュー & 凡例 -->
+    <section id="viewerWrapper">
+      <canvas id="myCanvas"></canvas>
+      <!-- 凡例 -->
+      <div id="legend">
+        <span>[ CO₂ concentration ]　　　low <- </span>
+        <div id="colorGradient"></div>
+        <span>-> high</span>
+      </div>
+    </section>
+
+    <!-- 選択した部屋の詳細情報表示 -->
+    <!-- マウスで部屋の部分を触ったらその部屋の情報を表示（未実装） -->
+    <div id="roomInfo" class="card"><h2>ROOM 301</h2>CO2 conc. 600ppm</div>
+
+    <!-- 右パネル -->
+    <aside id="sidePanel">
+        <!-- 使い方説明 -->
+      <div id="howToUse" class="card">
+        <h2 class="usageTitle">[ Usage ]</h2>
+        <div class="usageList">
+            <p>- You can rotate and move the camera using your mouse.</p>
+            <p>- Each colored cube represents the CO₂ concentration in a specific room.</p>
+            <p>- Hovering over a cube displays detailed information.</p>
+            <p>- Press the <strong>Reload</strong> button to update to the latest data.</p>
+        </div>
+      </div>
+      <!-- ログ -->
+      <!-- データ更新できたかなどを表示？（未実装） -->
+      <div id="logArea" class="card">log<br>> Fetch : SUCCESS</div>
+      <div id="footerInfo">© 2025 Kato & Kaneko/ v0.1</div>
+    </aside>
+  </main>
+
+  <!-- ========== スクリプト ========== -->
+  <script src="airoco_api.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>
