@@ -58,24 +58,23 @@ function init() {
   }
 
   // 3Dモデルの読み込み
-  /*
   const loader = new THREE.GLTFLoader();
-  let model = null;
-  loader.load(
-    //3Dモデルファイルのパスを指定
-    'model.glb',
-    function (glb) {
-      model = glb.scene;
-      model.name = "model_castle";
-      model.scale.set(1.0, 1.0, 1.0);
-      model.position.set(0, 0, 0);
-      scene.add(glb.scene);
-    },
-    function (error) {
-      console.log(error);
+  loader.load('R3.glb', function (gltf) {
+  const model = gltf.scene;
+    model.scale.set(500, 500, 500);
+
+  model.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshStandardMaterial({
+        color: 0x9999ff,
+        roughness: 0.4,
+        metalness: 0.1,
+      });
     }
-  );
-  */
+  });
+
+  scene.add(model);
+});
 
   var boxs = [];
   var data_num = [1, 2, 4, 5, 7, 8, 9]
@@ -112,15 +111,32 @@ function init() {
     }
   });
 
-  // 箱を作成
-  for (var i = 0; i < 7; i++) {
-    const geometry = new THREE.BoxGeometry(100, 100, 100);  // 大きさ
-    const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00000), transparent: true, opacity: 0.5 });  // 色
-    const box = new THREE.Mesh(geometry, material); // 箱
-    box.position.set(-500 + i * 120, 50, -200);
-    boxs.push(box);
-    scene.add(box);
-  }
+/*
+x 正->エレベータホール側
+y 正->空側
+z 正->R3正面側（meijoって書いてある方）
+*/
+
+//各箱オブジェクトの座標指定
+const positions = [
+  [-310, 75, 125],  //401
+  [-310, -75, 40], //301
+  [-25, -75, 325],  //3F-E
+  [-25, 75, 325],  //4F-E
+  [-310, 75, -80], //403
+  [-25, -375, 325],  //B1F-E
+  [-25, -525, 325],  //1F-E
+];
+
+for (let i = 0; i < positions.length; i++) {
+  const [x, y, z] = positions[i];
+  const geometry = new THREE.BoxGeometry(125, 125, 125);
+  const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
+  const box = new THREE.Mesh(geometry, material);
+  box.position.set(x, y, z);
+  boxs.push(box);
+  scene.add(box);
+}
 
   // リアルタイムレンダリング
   tick();
