@@ -5,26 +5,42 @@ request.send();
 request.onload = function () {
   var allData = this.response;   // Airocoの全てのデータ
   console.log(allData);
-  var co2Data = {}; // Co2を取り出したデータ (sensorNumber をキーとするオブジェクト)
-  var sens_num = [
-    "440103264789636",
-     "440103265321573",
-      "440103265317641",
-       "440103265869457",
-        "440103264788998",
-         "440103255555215",
-          "440103265356385"]; // 監視したいセンサー番号
+  var sensorData = {}
+  var sens_name = [
+    "Ｒ３ー４０１",
+    "Ｒ３ー３０１",
+    "Ｒ３ー３Ｆ_ＥＨ",
+    "Ｒ３ー４Ｆ_ＥＨ",
+    "Ｒ３ー４０３",
+    "Ｒ３ーB１Ｆ_ＥＨ",
+    "Ｒ３ー１Ｆ_ＥＨ",
+  ]
+  var sens_key = [
+    "401",
+    "301",
+    "3F",
+    "4F",
+    "403",
+    "B1F",
+    "1F",
+  ]
 
   for (var i = 0; i < allData.length; i++) {
     const sensor = allData[i];
-    if (sens_num.includes(sensor.sensorNumber) && typeof sensor.co2 === 'number') {
-      co2Data[i] = sensor.co2;
+    const nameIndex = sens_name.indexOf(sensor.sensorName);
+
+    if (nameIndex !== -1 && typeof sensor.co2 === 'number' && typeof sensor.temperature === 'number') {
+      const key = sens_key[nameIndex];
+      sensorData[key] = {
+        co2: sensor.co2,
+        temp: sensor.temperature
+      };
     }
   }
-  console.log(co2Data);
+  console.log(sensorData);
 
-  // カスタムイベントを発行して co2Data の値を渡す (オブジェクトとして渡す例)
-  window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { data: co2Data } }));
+  // カスタムイベントを発行して sensorData の値を渡す
+  window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { data: sensorData } }));
 }
 request.onerror = function () {
   console.log("データ取得エラー");
