@@ -105,6 +105,14 @@ function init() {
 
   // -------------------- データの取得(イベント) -------------------- //
   window.addEventListener('dataUpdated', function (event) {
+    // 更新日時(lastUpdate)
+    updateTime = event.detail.updateTime;
+    updateTime = updateTime.toString();
+    console.log(updateTime);
+    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
+    updateTime = "    > Last updated: " + updateTime;
+    document.getElementById('lastUpdate').textContent = updateTime;
+
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
     for (var i = 0; i < parameters.length; i++) {

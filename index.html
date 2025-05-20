@@ -28,13 +28,13 @@
     <h1 class="title">Meijo University   LB-3 CO₂ Monitoring System</h1>
 
     <!-- リロードボタン -->
-    <button id="reloadBtn">Reload</button>
+    <button id="reloadBtn" onclick="window.location.reload(true);">Reload</button>
   </header>
 
     <!-- <div id="isFetchSuccess">    > Fetch : SUCCESS</div> -->
      
   <!-- 更新時刻 -->
-  <div id="lastUpdate">    > Last updated: 2025-05-19 22:44 JST</div>
+  <div id="lastUpdate"></div>
 
   <!-- ========== メインレイアウト ========== -->
   <main id="layout">
@@ -50,7 +50,7 @@
     </section>
 
     <!-- 選択した部屋の詳細情報表示 -->
-    <!-- マウスで部屋の部分を触ったらその部屋の情報を表示（未実装） -->
+    <!-- マウスで部屋の部分を触ったらその部屋の情報を表示 -->
     <div id="roomInfo" class="card"><h2 id="roomInfo_name">NO SELECTED</h2><span id="roomInfo_co2"></span></div>
 
     <!-- 右パネル -->
