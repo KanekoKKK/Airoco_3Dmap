@@ -2,6 +2,7 @@ window.addEventListener("DOMContentLoaded", init);
 
 /* データのリスト
 name: apiからのデータの主キー
+text: HTML表示用のテキスト
 position:
   positonsの座標 [x,y,z]
   x 正->エレベータホール側
@@ -15,13 +16,13 @@ sensData:
   temp: 温度
 */
 var parameters = [
-  { "name": "401", "position": [-310, 75, 125], "sensData": null },
-  { "name": "301", "position": [-310, -75, 40], "sensData": null },
-  { "name": "3F", "position": [-25, -75, 325], "sensData": null },
-  { "name": "4F", "position": [-25, 75, 325], "sensData": null },
-  { "name": "403", "position": [-310, 75, -80], "sensData": null },
-  { "name": "B1F", "position": [-25, -375, 325], "sensData": null },
-  { "name": "1F", "position": [-25, -525, 325], "sensData": null }
+  { "name": "401", "text": "ROOM 401", "position": [-310, 75, 125], "sensData": null },
+  { "name": "301", "text": "ROOM 301", "position": [-310, -75, 40], "sensData": null },
+  { "name": "3F", "text": "3F EV", "position": [-25, -75, 325], "sensData": null },
+  { "name": "4F", "text": "4F EV", "position": [-25, 75, 325], "sensData": null },
+  { "name": "403", "text": "ROOM 403", "position": [-310, 75, -80], "sensData": null },
+  { "name": "B1F", "text": "B1F EV", "position": [-25, -375, 325], "sensData": null },
+  { "name": "1F", "text": "1F EV", "position": [-25, -525, 325], "sensData": null }
 ];
 
 var boxs = [];
@@ -32,6 +33,7 @@ var controls;
 var canvasElement;
 
 function init() {
+  // -------------------- 初期設定 -------------------- //
   // レンダラーを作成
   canvasElement = document.querySelector('#myCanvas');
   renderer = new THREE.WebGLRenderer({
@@ -99,8 +101,9 @@ function init() {
 
     scene.add(model);
   });
+  // -------------------- 初期設定 -------------------- //
 
-  // データの取得(イベント)
+  // -------------------- データの取得(イベント) -------------------- //
   window.addEventListener('dataUpdated', function (event) {
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
@@ -110,12 +113,13 @@ function init() {
       // sensDataの取り出し
       const sensData = parameters[i].sensData;
 
-      //各CO2濃度表示オブジェクトの座標指定
+      // 各オブジェクトの生成
       const [x, y, z] = parameters[i].position;
       const geometry = new THREE.BoxGeometry(125, 125, 125);
       const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
       const box = new THREE.Mesh(geometry, material);
       box.position.set(x, y, z);
+      box.name = parameters[i].name;
 
       // Co2から色を指定
       let color = 0xff0000;
@@ -141,6 +145,9 @@ function init() {
     // 初回データ取得後にレンダリングを開始
     tick();
   }, );
+  // -------------------- データの取得(イベント) -------------------- //
+  setControll();
+  rendering();
 }
 
 // リアルタイムレンダリング
@@ -149,3 +156,77 @@ function tick() {
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }
+
+// -------------------- マウス操作 -------------------- //
+let mouse;
+let raycaster;
+let clickFlg = false;
+let moveFlg = false;
+let selectedRoom = null;  // クリックしたオブジェクトのname
+
+function setControll() {
+  mouse = new THREE.Vector2();
+
+  //レイキャストを生成
+  raycaster = new THREE.Raycaster();
+  canvasElement.addEventListener('mousemove', handleMouseMove);
+
+  //マウスイベントを登録
+  canvasElement.addEventListener('click', handleClick);
+
+  function handleMouseMove(event) {
+    moveFlg = true;
+    const element = event.currentTarget;
+    const rect = element.getBoundingClientRect(); // Canvas の絶対的な位置とサイズを取得
+    const x = event.clientX - rect.left; // Canvas 左端からの相対的な X 座標
+    const y = event.clientY - rect.top;  // Canvas 上端からの相対的な Y 座標
+    const w = rect.width;
+    const h = rect.height;
+    mouse.x = (x / w) * 2 - 1;
+    mouse.y = -(y / h) * 2 + 1;
+  }
+
+  function handleClick(event) { // クリック時の動作
+    if (clickFlg) {
+      for (i = 0; i < parameters.length; i++) {
+        if (selectedRoom == parameters[i].name) {
+          // HTMLを編集
+          document.getElementById('roomInfo_name').textContent = parameters[i].text;
+          document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + parameters[i].sensData.co2 + "ppm";
+        }
+      }
+    }
+  }
+}
+
+function rendering() {
+  requestAnimationFrame(rendering);
+
+  //マウス位置からまっすぐに伸びる光線ベクトルを生成
+  raycaster.setFromCamera(mouse, camera);
+
+  //光線と交差したオブジェクトを取得
+  const intersects = raycaster.intersectObjects(scene.children, false);
+
+  //光線と交差したオブジェクトがある場合
+  if (intersects.length > 0) {
+    //交差したオブジェクトを取得
+    const obj = intersects[0].object;
+
+    const isParameterName = parameters.some(param => param.name === obj.name);
+
+    if (isParameterName) {
+      if (moveFlg) {  // クリックを検知
+        clickFlg = true;
+        selectedRoom = obj.name;
+      }
+    } else {
+      clickFlg = false;
+    }
+  } else {
+    clickFlg = false;
+  }
+
+  renderer.render(scene, camera);
+}
+// -------------------- マウス操作 -------------------- //
