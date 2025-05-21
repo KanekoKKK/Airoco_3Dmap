@@ -21,8 +21,8 @@ var parameters = [
   { "name": "3F", "text": "3F EV", "position": [-25, -75, 325], "sensData": null },
   { "name": "4F", "text": "4F EV", "position": [-25, 75, 325], "sensData": null },
   { "name": "403", "text": "ROOM 403", "position": [-310, 75, -80], "sensData": null },
-  { "name": "B1F", "text": "B1F EV", "position": [-25, -375, 325], "sensData": null },
-  { "name": "1F", "text": "1F EV", "position": [-25, -525, 325], "sensData": null }
+  { "name": "B1F", "text": "B1F EV", "position": [-25, -525, 325], "sensData": null },
+  { "name": "1F", "text": "1F EV", "position": [-25, -375, 325], "sensData": null }
 ];
 
 var boxs = [];
