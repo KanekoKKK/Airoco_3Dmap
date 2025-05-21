@@ -25,7 +25,7 @@
 <body>
   <!-- ========== ヘッダ ========== -->
   <header id="topBar">
-    <h1 class="title">Meijo University   LB-3 CO₂ Monitoring System</h1>
+    <h1 class="title">Meijo University   LB-3  Monitoring System</h1>
 
     <!-- リロードボタン -->
     <button id="reloadBtn" onclick="window.location.reload(true);"><strong>Reload</strong></button>
@@ -49,9 +49,7 @@
       </div>
     </section>
 
-    <!-- 選択した部屋の詳細情報表示 -->
-    <!-- マウスで部屋の部分を触ったらその部屋の情報を表示 -->
-    <div id="roomInfo" class="card"><h2 id="roomInfo_name">NO SELECTED</h2><span id="roomInfo_co2"></span></div>
+    
 
     <!-- 右パネル -->
     <aside id="sidePanel">
@@ -65,9 +63,14 @@
             <p>- Press the <strong>Reload</strong> button to update to the latest data.</p>
         </div>
       </div>
-      <!-- ログ -->
-      <!-- データ更新できたかなどを表示？（未実装） -->
-      <div id="logArea" class="card">log<br>> Fetch : SUCCESS</div>
+      <!-- 選択した部屋の詳細情報表示 -->
+      <!-- マウスで部屋の部分を触ったらその部屋の情報を表示 -->
+      <div id="roomInfo" class="card"><h2 id="roomInfo_name">NO SELECTED</h2><span id="roomInfo_co2"></span></div>
+      <div id="buttonContainer">
+        <button id="btn1">CO2</button>
+        <button id="btn2">temp</button>
+        <button id="btn3">hum</button>
+      </div>
       <div id="footerInfo">© 2025 Kato & Kaneko/ v0.1</div>
     </aside>
   </main>
