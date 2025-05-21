@@ -34,7 +34,8 @@ function loadSensorData() {
         const key = sens_key[nameIndex];
         sensorData[key] = {
           co2: sensor.co2,
-          temp: sensor.temperature
+          temp: sensor.temperature,
+          hum: sensor.relativeHumidity
         };
       }
     }
