@@ -109,14 +109,7 @@ function init() {
 
   // -------------------- データの取得(イベント) -------------------- //
   window.addEventListener('dataUpdated', function (event) {
-    // 更新日時(lastUpdate)
-    updateTime = event.detail.updateTime;
-    updateTime = updateTime.toString();
-    console.log(updateTime);
-    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
-    updateTime = "    > Last updated: " + updateTime;
-    document.getElementById('lastUpdate').textContent = updateTime;
-
+    writeLastUpdate(event); //　更新日時
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
     for (var i = 0; i < parameters.length; i++) {
@@ -256,9 +249,8 @@ function setControll() {
     if (clickFlg) {
       for (i = 0; i < parameters.length; i++) {
         if (selectedRoom == parameters[i].name) {
-          // HTMLを編集
-          document.getElementById('roomInfo_name').textContent = parameters[i].text;
-          document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + parameters[i].sensData.co2 + "ppm";
+          // roomInfoを更新
+          writeRoomInfo(parameters[i]);
         }
       }
     }
@@ -296,3 +288,22 @@ function rendering() {
   renderer.render(scene, camera);
 }
 // -------------------- マウス操作 -------------------- //
+// -------------------- HTML編集 -------------------- //
+// 更新日時(lastUpdate)
+function writeLastUpdate(event) {
+    updateTime = event.detail.updateTime;
+    updateTime = updateTime.toString();
+    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
+    updateTime = "    > Last updated: " + updateTime;
+    document.getElementById('lastUpdate').textContent = updateTime;
+
+}
+// センサ情報(roomInfo)
+function writeRoomInfo(param) {
+  document.getElementById('roomInfo_name').textContent = param.text;
+  document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + param.sensData.co2 + "ppm";
+  document.getElementById('roomInfo_temp').textContent = "temperature. " + param.sensData.temp + "℃";
+  document.getElementById('roomInfo_hum').textContent = "humidity. " + param.sensData.hum + "%";
+
+}
+// -------------------- HTML編集 -------------------- //
