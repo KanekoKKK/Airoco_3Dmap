@@ -15,6 +15,7 @@ sensData:
   name: キー
   co2: Co2濃度
   temp: 温度
+  hum: 湿度
 */
 var parameters = [
   { "name": "401", "text": "ROOM 401", "position": [-310, 75, 125], "sensData": null },
@@ -26,6 +27,7 @@ var parameters = [
   { "name": "1F", "text": "1F EV", "position": [-25, -375, 325], "sensData": null }
 ];
 
+var mode = "co2"  // どのセンサの値を使用するか(co2,temp,hum)
 var boxs = [];
 var scene;
 var camera;
@@ -96,6 +98,8 @@ function init() {
           color: 0x9999ff,
           roughness: 0.4,
           metalness: 0.1,
+          transparent: true,
+          opacity: 0.5,
         });
       }
     });
@@ -106,14 +110,7 @@ function init() {
 
   // -------------------- データの取得(イベント) -------------------- //
   window.addEventListener('dataUpdated', function (event) {
-    // 更新日時(lastUpdate)
-    updateTime = event.detail.updateTime;
-    updateTime = updateTime.toString();
-    console.log(updateTime);
-    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
-    updateTime = "    > Last updated: " + updateTime;
-    document.getElementById('lastUpdate').textContent = updateTime;
-
+    writeLastUpdate(event); //　更新日時
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
     for (var i = 0; i < parameters.length; i++) {
@@ -125,25 +122,79 @@ function init() {
       // 各オブジェクトの生成
       const [x, y, z] = parameters[i].position;
       const geometry = new THREE.BoxGeometry(125, 125, 125);
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9});
       const box = new THREE.Mesh(geometry, material);
       box.position.set(x, y, z);
       box.name = parameters[i].name;
 
-      // Co2から色を指定
-      let color = 0xff0000;
-      if (sensData.co2 < 500) color = 0x00FF00;
-      else if (sensData.co2 < 550) color = 0x44FF00;
-      else if (sensData.co2 < 600) color = 0x88FF00;
-      else if (sensData.co2 < 650) color = 0xAAFF00;
-      else if (sensData.co2 < 700) color = 0xDDFF00;
-      else if (sensData.co2 < 750) color = 0xFFFF00;
-      else if (sensData.co2 < 800) color = 0xFFDD00;
-      else if (sensData.co2 < 850) color = 0xFFBB00;
-      else if (sensData.co2 < 900) color = 0xFF9900;
-      else if (sensData.co2 < 950) color = 0xFF7700;
-      else if (sensData.co2 < 1000) color = 0xFF4400;
-      else color = 0xFF0000;
+      // 色を指定
+      switch (mode) {
+        case "co2": color = colorByCo2(sensData.co2);break;
+        case "temp": color = colorByTemp(sensData.temp);break;
+        case "hum": color = colorByHum(sensData.hum);break;
+      }
+
+      // co2から色を決定
+      function colorByCo2(co2) {
+        let color = 0xff0000;
+        if (co2 < 500) color = 0x00FF00;
+        else if (co2 < 550) color = 0x44FF00;
+        else if (co2 < 600) color = 0x88FF00;
+        else if (co2 < 650) color = 0xAAFF00;
+        else if (co2 < 700) color = 0xDDFF00;
+        else if (co2 < 750) color = 0xFFFF00;
+        else if (co2 < 800) color = 0xFFDD00;
+        else if (co2 < 850) color = 0xFFBB00;
+        else if (co2 < 900) color = 0xFF9900;
+        else if (co2 < 950) color = 0xFF7700;
+        else color = 0xFF4400;
+        return color;
+      }
+      
+      // tempから色を決定
+      function colorByTemp(temp) {
+        let color = 0xff0000;
+        if (temp < 15) color = 0x655DD9;
+        else if (temp < 16) color = 0x5E76E0;
+        else if (temp < 17) color = 0x5E94DB;
+        else if (temp < 18) color = 0x5EAED3;
+        else if (temp < 19) color = 0x5EC6CE;
+        else if (temp < 20) color = 0x60C8B5;
+        else if (temp < 21) color = 0x60C499;
+        else if (temp < 22) color = 0x60BD7E;
+        else if (temp < 23) color = 0x61B867;
+        else if (temp < 24) color = 0x71BD60;
+        else if (temp < 25) color = 0x8CC460;
+        else if (temp < 26) color = 0xA8C961;
+        else if (temp < 27) color = 0xC7CF5F;
+        else if (temp < 28) color = 0xD4BE5F;
+        else if (temp < 29) color = 0xDBA55E;
+        else if (temp < 30) color = 0xE0875E;
+        else color = 0xE6655C;
+        return color;
+      }
+
+      // humから色を決定
+      function colorByHum(hum) {
+        let color = 0xff0000;
+        if (hum < 35) color = 0xDBA55E;
+        else if (hum < 40) color = 0xD4BE5F;
+        else if (hum < 42.5) color = 0xC7CF5F;
+        else if (hum < 45) color = 0xA8C961;
+        else if (hum < 47.5) color = 0x8CC460;
+        else if (hum < 50) color = 0x71BD60;
+        else if (hum < 52.5) color = 0x61B867;
+        else if (hum < 55) color = 0x60BD7E;
+        else if (hum < 57.5) color = 0x60C499;
+        else if (hum < 60) color = 0x61C9B6;
+        else if (hum < 62.5) color = 0x5FC7CF;
+        else if (hum < 65) color = 0x5FAFD4;
+        else if (hum < 67.5) color = 0x5E94DB;
+        else if (hum < 70) color = 0x5D75DF;
+        else color = 0x615AD0;
+        return color;
+      }
+
       box.material.color.set(color);
       console.log(color);
 
@@ -204,9 +255,8 @@ function setControll() {
     if (clickFlg) {
       for (i = 0; i < parameters.length; i++) {
         if (selectedRoom == parameters[i].name) {
-          // HTMLを編集
-          document.getElementById('roomInfo_name').textContent = parameters[i].text;
-          document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + parameters[i].sensData.co2 + "ppm";
+          // roomInfoを更新
+          writeRoomInfo(parameters[i]);
         }
       }
     }
@@ -244,3 +294,22 @@ function rendering() {
   renderer.render(scene, camera);
 }
 // -------------------- マウス操作 -------------------- //
+// -------------------- HTML編集 -------------------- //
+// 更新日時(lastUpdate)
+function writeLastUpdate(event) {
+    updateTime = event.detail.updateTime;
+    updateTime = updateTime.toString();
+    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
+    updateTime = "    > Last updated: " + updateTime;
+    document.getElementById('lastUpdate').textContent = updateTime;
+
+}
+// センサ情報(roomInfo)
+function writeRoomInfo(param) {
+  document.getElementById('roomInfo_name').textContent = param.text;
+  document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + param.sensData.co2 + "ppm";
+  document.getElementById('roomInfo_temp').textContent = "temperature. " + param.sensData.temp + "℃";
+  document.getElementById('roomInfo_hum').textContent = "humidity. " + param.sensData.hum + "%";
+
+}
+// -------------------- HTML編集 -------------------- //

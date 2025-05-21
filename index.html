@@ -25,7 +25,7 @@
 <body>
   <!-- ========== ヘッダ ========== -->
   <header id="topBar">
-    <h1 class="title">Meijo University   LB-3  Monitoring System</h1>
+    <h1 class="title">Meijo University   R-3 Monitoring System</h1>
 
     <!-- リロードボタン -->
     <button id="reloadBtn" onclick="window.location.reload(true);"><strong>Reload</strong></button>
@@ -43,13 +43,19 @@
       <canvas id="myCanvas"></canvas>
       <!-- 凡例 -->
       <div id="legend">
-        <span>[ CO₂ concentration ]　　　low <- </span>
+        <span id="legend_text">[ CO₂ concentration ]　　　low <- </span>
         <div id="colorGradient"></div>
         <span>-> high</span>
       </div>
     </section>
 
-    
+    <!-- 選択した部屋の詳細情報表示 -->
+    <!-- マウスで部屋の部分を触ったらその部屋の情報を表示 --><div id="roomInfo" class="card">
+      <h2 id="roomInfo_name">NO SELECTED</h2>
+      <p id="roomInfo_co2"></p>
+      <p id="roomInfo_temp"></p>
+      <p id="roomInfo_hum"></p>
+    </div>
 
     <!-- 右パネル -->
     <aside id="sidePanel">
@@ -58,7 +64,7 @@
         <h2 class="usageTitle">[ Usage ]</h2>
         <div class="usageList">
             <p>- You can rotate and move the camera using your mouse.</p>
-            <p>- Each colored cube represents the CO₂ concentration in a specific room.</p>
+            <p>- Each colored cube represents informations about a specific room.</p>
             <p>- Hovering over a cube displays detailed information.</p>
             <p>- Press the <strong>Reload</strong> button to update to the latest data.</p>
         </div>
