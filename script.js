@@ -1,5 +1,6 @@
 window.addEventListener("DOMContentLoaded", init);
-
+let cameraAngle = 0;
+const cameraRadius = 2000; // 必要ならお好みで調整
 /* データのリスト
 name: apiからのデータの主キー
 text: HTML表示用のテキスト
@@ -160,6 +161,11 @@ function init() {
 
 // リアルタイムレンダリング
 function tick() {
+cameraAngle -= 0.003; // 回転速度
+  camera.position.x = Math.sin(cameraAngle) * cameraRadius;
+  camera.position.z = Math.cos(cameraAngle) * cameraRadius;
+  camera.lookAt(0, 0, 0); // 中心を向く
+
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
