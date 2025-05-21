@@ -25,11 +25,17 @@ body{
 #topBar h1 { font-size: 1.6rem; }
 #reloadBtn { background: #111; border: 2px solid #111; color: #fff;
              padding: .4rem 1rem; cursor: pointer; 
-            font-family:'Share Tech Mono',monospace; }
+            font-family:'Share Tech Mono',monospace;
+            font-size: 30px; }
 
 /* 更新時刻 */
 #lastUpdate { padding: .4rem 1rem; font-size: .9rem; background: #111; }
 #isFetchSuccess { padding: .4rem 1rem; font-size: .9rem; background: #111; }
+
+#roomInfo{
+  align-self: start;   /* ← 高さ 100% をやめて“上寄せ” */
+  max-height: 600px;   /* 好きな数値に調整。なくても OK */
+}
 
 /* ==== レイアウト（3D + 右パネル） ==== */
 #layout{
@@ -38,7 +44,7 @@ body{
   /* ↓3Dデータ表示、詳細表示、使い方などを横並びに */
   /* サイズ固定方法を変えた方がいいかもしれない（今3Dモデル表示部分以外のサイズを固定） */
   /* 縦長ウィンドウ（横長でも）表示がキモい ノートPC用の画面幅にしか合ってない*/
-  grid-template-columns: minmax(var(--main-min),1fr) 200px var(--side); 
+  grid-template-columns: minmax(var(--main-min),1fr)  var(--side); 
   gap:1rem;
   padding:1rem;
   overflow:hidden;
@@ -109,6 +115,29 @@ body{
   margin: 0.4rem 0;
   text-indent: 0;
   padding-left: 0;
+}
+
+#buttonContainer {
+  display: flex;
+  justify-content: center;  /* または space-between, space-around など */
+  gap: 16px;                /* ボタンの間の余白 */
+  margin-top: 16px;         /* Three.jsとの間の余白 */
+}
+
+/* 三連ボタン */
+#buttonContainer button {
+  padding: 10px 20px;
+  background-color: #111;
+  color: white;
+  border: 1px solid #FFF;
+  
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#buttonContainer button:hover {
+  background-color: #111;
 }
 
 

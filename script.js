@@ -1,5 +1,6 @@
 window.addEventListener("DOMContentLoaded", init);
-
+let cameraAngle = 0;
+const cameraRadius = 2000; // 必要ならお好みで調整
 /* データのリスト
 name: apiからのデータの主キー
 text: HTML表示用のテキスト
@@ -21,8 +22,8 @@ var parameters = [
   { "name": "3F", "text": "3F EV", "position": [-25, -75, 325], "sensData": null },
   { "name": "4F", "text": "4F EV", "position": [-25, 75, 325], "sensData": null },
   { "name": "403", "text": "ROOM 403", "position": [-310, 75, -80], "sensData": null },
-  { "name": "B1F", "text": "B1F EV", "position": [-25, -375, 325], "sensData": null },
-  { "name": "1F", "text": "1F EV", "position": [-25, -525, 325], "sensData": null }
+  { "name": "B1F", "text": "B1F EV", "position": [-25, -525, 325], "sensData": null },
+  { "name": "1F", "text": "1F EV", "position": [-25, -375, 325], "sensData": null }
 ];
 
 var boxs = [];
@@ -87,7 +88,7 @@ function init() {
   const loader = new THREE.GLTFLoader();
   loader.load('R3.glb', function (gltf) {
     const model = gltf.scene;
-    model.scale.set(500, 500, 500);
+    model.scale.set(500, 500, 500); // モデルのスケールを調整
 
     model.traverse((child) => {
       if (child.isMesh) {
@@ -160,6 +161,11 @@ function init() {
 
 // リアルタイムレンダリング
 function tick() {
+cameraAngle -= 0.003; // 回転速度
+  camera.position.x = Math.sin(cameraAngle) * cameraRadius;
+  camera.position.z = Math.cos(cameraAngle) * cameraRadius;
+  camera.lookAt(0, 0, 0); // 中心を向く
+
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
