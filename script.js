@@ -15,7 +15,6 @@ sensData:
   name: キー
   co2: Co2濃度
   temp: 温度
-  hum: 湿度
 */
 var parameters = [
   { "name": "401", "text": "ROOM 401", "position": [-310, 75, 125], "sensData": null },
@@ -99,8 +98,6 @@ function init() {
           color: 0x9999ff,
           roughness: 0.4,
           metalness: 0.1,
-          transparent: true,
-          opacity: 0.5,
         });
       }
     });
@@ -111,7 +108,14 @@ function init() {
 
   // -------------------- データの取得(イベント) -------------------- //
   window.addEventListener('dataUpdated', function (event) {
-    writeLastUpdate(event); //　更新日時
+    // 更新日時(lastUpdate)
+    updateTime = event.detail.updateTime;
+    updateTime = updateTime.toString();
+    console.log(updateTime);
+    updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
+    updateTime = "    > Last updated: " + updateTime;
+    document.getElementById('lastUpdate').textContent = updateTime;
+
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
     for (var i = 0; i < parameters.length; i++) {
@@ -151,10 +155,10 @@ function init() {
 
 // リアルタイムレンダリング
 function tick() {
-  cameraAngle -= 0.003; // 回転速度
-  camera.position.x = Math.sin(cameraAngle) * cameraRadius;
-  camera.position.z = Math.cos(cameraAngle) * cameraRadius;
-  camera.lookAt(0, 0, 0); // 中心を向く
+// cameraAngle -= 0.003; // 回転速度
+//   camera.position.x = Math.sin(cameraAngle) * cameraRadius;
+//   camera.position.z = Math.cos(cameraAngle) * cameraRadius;
+//   camera.lookAt(0, 0, 0); // 中心を向く
 
   controls.update();
   renderer.render(scene, camera);
@@ -274,8 +278,9 @@ function setControll() {
     if (clickFlg) {
       for (i = 0; i < parameters.length; i++) {
         if (selectedRoom == parameters[i].name) {
-          // roomInfoを更新
-          writeRoomInfo(parameters[i]);
+          // HTMLを編集
+          document.getElementById('roomInfo_name').textContent = parameters[i].text;
+          document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + parameters[i].sensData.co2 + "ppm";
         }
       }
     }
