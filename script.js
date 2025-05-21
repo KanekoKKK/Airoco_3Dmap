@@ -87,7 +87,7 @@ function init() {
   const loader = new THREE.GLTFLoader();
   loader.load('R3.glb', function (gltf) {
     const model = gltf.scene;
-    model.scale.set(500, 500, 500);
+    model.scale.set(500, 500, 500); // モデルのスケールを調整
 
     model.traverse((child) => {
       if (child.isMesh) {

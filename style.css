@@ -25,11 +25,17 @@ body{
 #topBar h1 { font-size: 1.6rem; }
 #reloadBtn { background: #111; border: 2px solid #111; color: #fff;
              padding: .4rem 1rem; cursor: pointer; 
-            font-family:'Share Tech Mono',monospace; }
+            font-family:'Share Tech Mono',monospace;
+            font-size: 30px; }
 
 /* 更新時刻 */
 #lastUpdate { padding: .4rem 1rem; font-size: .9rem; background: #111; }
 #isFetchSuccess { padding: .4rem 1rem; font-size: .9rem; background: #111; }
+
+#roomInfo{
+  align-self: start;   /* ← 高さ 100% をやめて“上寄せ” */
+  max-height: 600px;   /* 好きな数値に調整。なくても OK */
+}
 
 /* ==== レイアウト（3D + 右パネル） ==== */
 #layout{
