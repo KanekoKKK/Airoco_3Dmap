@@ -27,7 +27,7 @@ var parameters = [
   { "name": "1F", "text": "1F EV", "position": [-25, -375, 325], "sensData": null }
 ];
 
-var mode = "co2"  // どのセンサの値を使用するか(co2,temp,hum)
+var mode = "co2";  // どのセンサの値を使用するか(co2,temp,hum)
 var boxs = [];
 var scene;
 var camera;
@@ -36,6 +36,7 @@ var controls;
 var canvasElement;
 
 function init() {
+  console.log(mode);
   // -------------------- 初期設定 -------------------- //
   // レンダラーを作成
   canvasElement = document.querySelector('#myCanvas');
@@ -122,81 +123,14 @@ function init() {
       // 各オブジェクトの生成
       const [x, y, z] = parameters[i].position;
       const geometry = new THREE.BoxGeometry(125, 125, 125);
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9});
+      const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.9});
       const box = new THREE.Mesh(geometry, material);
       box.position.set(x, y, z);
       box.name = parameters[i].name;
 
-      // 色を指定
-      switch (mode) {
-        case "co2": color = colorByCo2(sensData.co2);break;
-        case "temp": color = colorByTemp(sensData.temp);break;
-        case "hum": color = colorByHum(sensData.hum);break;
-      }
-
-      // co2から色を決定
-      function colorByCo2(co2) {
-        let color = 0xff0000;
-        if (co2 < 500) color = 0x00FF00;
-        else if (co2 < 550) color = 0x44FF00;
-        else if (co2 < 600) color = 0x88FF00;
-        else if (co2 < 650) color = 0xAAFF00;
-        else if (co2 < 700) color = 0xDDFF00;
-        else if (co2 < 750) color = 0xFFFF00;
-        else if (co2 < 800) color = 0xFFDD00;
-        else if (co2 < 850) color = 0xFFBB00;
-        else if (co2 < 900) color = 0xFF9900;
-        else if (co2 < 950) color = 0xFF7700;
-        else color = 0xFF4400;
-        return color;
-      }
-      
-      // tempから色を決定
-      function colorByTemp(temp) {
-        let color = 0xff0000;
-        if (temp < 15) color = 0x655DD9;
-        else if (temp < 16) color = 0x5E76E0;
-        else if (temp < 17) color = 0x5E94DB;
-        else if (temp < 18) color = 0x5EAED3;
-        else if (temp < 19) color = 0x5EC6CE;
-        else if (temp < 20) color = 0x60C8B5;
-        else if (temp < 21) color = 0x60C499;
-        else if (temp < 22) color = 0x60BD7E;
-        else if (temp < 23) color = 0x61B867;
-        else if (temp < 24) color = 0x71BD60;
-        else if (temp < 25) color = 0x8CC460;
-        else if (temp < 26) color = 0xA8C961;
-        else if (temp < 27) color = 0xC7CF5F;
-        else if (temp < 28) color = 0xD4BE5F;
-        else if (temp < 29) color = 0xDBA55E;
-        else if (temp < 30) color = 0xE0875E;
-        else color = 0xE6655C;
-        return color;
-      }
-
-      // humから色を決定
-      function colorByHum(hum) {
-        let color = 0xff0000;
-        if (hum < 35) color = 0xDBA55E;
-        else if (hum < 40) color = 0xD4BE5F;
-        else if (hum < 42.5) color = 0xC7CF5F;
-        else if (hum < 45) color = 0xA8C961;
-        else if (hum < 47.5) color = 0x8CC460;
-        else if (hum < 50) color = 0x71BD60;
-        else if (hum < 52.5) color = 0x61B867;
-        else if (hum < 55) color = 0x60BD7E;
-        else if (hum < 57.5) color = 0x60C499;
-        else if (hum < 60) color = 0x61C9B6;
-        else if (hum < 62.5) color = 0x5FC7CF;
-        else if (hum < 65) color = 0x5FAFD4;
-        else if (hum < 67.5) color = 0x5E94DB;
-        else if (hum < 70) color = 0x5D75DF;
-        else color = 0x615AD0;
-        return color;
-      }
-
+      // 色の変更
+      getColor(sensData);
       box.material.color.set(color);
-      console.log(color);
 
       // boxの保存
       boxs.push(box);
@@ -208,11 +142,16 @@ function init() {
   // -------------------- データの取得(イベント) -------------------- //
   setControll();
   rendering();
+
+  // モード変更
+  document.getElementById("btn_co2").addEventListener("click", function () { changeMode("co2") });
+  document.getElementById("btn_temp").addEventListener("click", function () { changeMode("temp") });
+  document.getElementById("btn_hum").addEventListener("click", function () { changeMode("hum") });
 }
 
 // リアルタイムレンダリング
 function tick() {
-cameraAngle -= 0.003; // 回転速度
+  cameraAngle -= 0.003; // 回転速度
   camera.position.x = Math.sin(cameraAngle) * cameraRadius;
   camera.position.z = Math.cos(cameraAngle) * cameraRadius;
   camera.lookAt(0, 0, 0); // 中心を向く
@@ -222,6 +161,86 @@ cameraAngle -= 0.003; // 回転速度
   requestAnimationFrame(tick);
 }
 
+// モード変更
+function changeMode(inMode) {
+  // 凡例変更
+  writeLegend(mode, inMode);  // 古いmode,新しいmode
+  mode = inMode;
+  // オブジェクトの色変更
+  for (i = 0; i < parameters.length; i++) {
+    const box = boxs[i];
+    const param = parameters[i];
+    getColor(param.sensData);
+    box.material.color.set(color);
+  }
+}
+// -------------------- 色指定 -------------------- //
+function getColor(sensData) {
+  switch (mode) {
+    case "co2": color = colorByCo2(sensData.co2); break;
+    case "temp": color = colorByTemp(sensData.temp); break;
+    case "hum": color = colorByHum(sensData.hum); break;
+  }
+
+  // co2から色を決定
+  function colorByCo2(co2) {
+    if (co2 < 500) color = 0x00FF00;
+    else if (co2 < 550) color = 0x44FF00;
+    else if (co2 < 600) color = 0x88FF00;
+    else if (co2 < 650) color = 0xAAFF00;
+    else if (co2 < 700) color = 0xDDFF00;
+    else if (co2 < 750) color = 0xFFFF00;
+    else if (co2 < 800) color = 0xFFDD00;
+    else if (co2 < 850) color = 0xFFBB00;
+    else if (co2 < 900) color = 0xFF9900;
+    else if (co2 < 950) color = 0xFF7700;
+    else color = 0xFF4400;
+    return color;
+  }
+
+  // tempから色を決定
+  function colorByTemp(temp) {
+    if (temp < 15) color = 0x6600FF;
+    else if (temp < 16) color = 0x0066FF;
+    else if (temp < 17) color = 0x00AAFF;
+    else if (temp < 18) color = 0x00FFFF;
+    else if (temp < 19) color = 0x00FFFF;
+    else if (temp < 20) color = 0x00FFB3;
+    else if (temp < 21) color = 0x00FF80;
+    else if (temp < 22) color = 0x00FF4D;
+    else if (temp < 23) color = 0x33FF00;
+    else if (temp < 24) color = 0x80FF00;
+    else if (temp < 25) color = 0xCCFF00;
+    else if (temp < 26) color = 0xFFFF00;
+    else if (temp < 27) color = 0xFFFF00;
+    else if (temp < 28) color = 0xFFD700;
+    else if (temp < 29) color = 0xFFA500;
+    else if (temp < 30) color = 0xFF8000;
+    else color = 0xFF0000;
+    return color;
+  }
+
+  // humから色を決定
+  function colorByHum(hum) {
+    if (hum < 35) color = 0xFFA500;
+    else if (hum < 40) color = 0xFFD700;
+    else if (hum < 42.5) color = 0xFFFF00;
+    else if (hum < 45) color = 0xFFFF00;
+    else if (hum < 47.5) color = 0xCCFF00;
+    else if (hum < 50) color = 0x80FF00;
+    else if (hum < 52.5) color = 0x33FF00;
+    else if (hum < 55) color = 0x00FF4D;
+    else if (hum < 57.5) color = 0x00FF80;
+    else if (hum < 60) color = 0x00FFCC;
+    else if (hum < 62.5) color = 0x00FFFF;
+    else if (hum < 65) color = 0x00AAFF;
+    else if (hum < 67.5) color = 0x00AAFF;
+    else if (hum < 70) color = 0x3366FF;
+    else color = 0x6600FF;
+    return color;
+  }
+}
+// -------------------- 色指定 -------------------- //
 // -------------------- マウス操作 -------------------- //
 let mouse;
 let raycaster;
@@ -307,9 +326,25 @@ function writeLastUpdate(event) {
 // センサ情報(roomInfo)
 function writeRoomInfo(param) {
   document.getElementById('roomInfo_name').textContent = param.text;
-  document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + param.sensData.co2 + "ppm";
-  document.getElementById('roomInfo_temp').textContent = "temperature. " + param.sensData.temp + "℃";
-  document.getElementById('roomInfo_hum').textContent = "humidity. " + param.sensData.hum + "%";
-
+  document.getElementById('roomInfo_co2').textContent = "CO₂ conc.    " + param.sensData.co2 + "ppm";
+  document.getElementById('roomInfo_temp').textContent = "Temperature. " + param.sensData.temp + "℃";
+  document.getElementById('roomInfo_hum').textContent = "Humidity.    " + param.sensData.hum + "%";
+}
+// 凡例(legend)
+function writeLegend(oldMode, newMode) {
+  // legend_text
+  switch(newMode){
+    case "co2": legendText = "[ CO2 concentration ]"; break;
+    case "temp": legendText = "[    Temperature    ]"; break;
+    case "hum": legendText = "[      Humidity     ]"; break;
+  }
+  document.getElementById('legend_text').textContent = legendText;
+  // colorGradient
+  var element = document.getElementById('colorGradient'); // 変更したいid
+  oldClass = "colorGradient_" + oldMode;
+  newClass = "colorGradient_" + newMode;
+  element.classList.remove(oldClass); // クラス名の削除
+  element.classList.add(newClass); // クラス名の追加
+  console.log("newClass:" + newClass);
 }
 // -------------------- HTML編集 -------------------- //
