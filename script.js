@@ -35,7 +35,6 @@ var controls;
 var canvasElement;
 
 function init() {
-  console.log(mode);
   // -------------------- 初期設定 -------------------- //
   // レンダラーを作成
   canvasElement = document.querySelector('#myCanvas');
@@ -91,6 +90,7 @@ function init() {
   loader.load('R3.glb', function (gltf) {
     const model = gltf.scene;
     model.scale.set(500, 500, 500); // モデルのスケールを調整
+    model.name = "R3";
 
     model.traverse((child) => {
       if (child.isMesh) {
@@ -98,6 +98,8 @@ function init() {
           color: 0x9999ff,
           roughness: 0.4,
           metalness: 0.1,
+          transparent: true,
+          opacity: 0.5,
         });
       }
     });
@@ -111,7 +113,6 @@ function init() {
     // 更新日時(lastUpdate)
     updateTime = event.detail.updateTime;
     updateTime = updateTime.toString();
-    console.log(updateTime);
     updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
     updateTime = "    > Last updated: " + updateTime;
     document.getElementById('lastUpdate').textContent = updateTime;
@@ -155,10 +156,10 @@ function init() {
 
 // リアルタイムレンダリング
 function tick() {
-// cameraAngle -= 0.003; // 回転速度
-//   camera.position.x = Math.sin(cameraAngle) * cameraRadius;
-//   camera.position.z = Math.cos(cameraAngle) * cameraRadius;
-//   camera.lookAt(0, 0, 0); // 中心を向く
+ cameraAngle -= 0.003; // 回転速度
+   camera.position.x = Math.sin(cameraAngle) * cameraRadius;
+   camera.position.z = Math.cos(cameraAngle) * cameraRadius;
+   camera.lookAt("R3"); // オブジェクトを向く
 
   controls.update();
   renderer.render(scene, camera);
@@ -275,15 +276,7 @@ function setControll() {
   }
 
   function handleClick(event) { // クリック時の動作
-    if (clickFlg) {
-      for (i = 0; i < parameters.length; i++) {
-        if (selectedRoom == parameters[i].name) {
-          // HTMLを編集
-          document.getElementById('roomInfo_name').textContent = parameters[i].text;
-          document.getElementById('roomInfo_co2').textContent = "CO2 conc. " + parameters[i].sensData.co2 + "ppm";
-        }
-      }
-    }
+    if (clickFlg) {}
   }
 }
 
@@ -304,9 +297,15 @@ function rendering() {
     const isParameterName = parameters.some(param => param.name === obj.name);
 
     if (isParameterName) {
-      if (moveFlg) {  // クリックを検知
+      if (moveFlg) {  // オブジェクト上のカーソルを検知
         clickFlg = true;
         selectedRoom = obj.name;
+        // roomInfo更新
+        for (i = 0; i < parameters.length; i++) {
+          if (selectedRoom == parameters[i].name) {
+            writeRoomInfo(parameters[i]);
+          }
+        }
       }
     } else {
       clickFlg = false;
@@ -350,6 +349,5 @@ function writeLegend(oldMode, newMode) {
   newClass = "colorGradient_" + newMode;
   element.classList.remove(oldClass); // クラス名の削除
   element.classList.add(newClass); // クラス名の追加
-  console.log("newClass:" + newClass);
 }
 // -------------------- HTML編集 -------------------- //
