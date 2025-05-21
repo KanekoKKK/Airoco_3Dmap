@@ -59,7 +59,7 @@ body{
 }
 
 /* グラデーションバー */
-#colorGradient {
+.colorGradient_co2 {
   width: 150px;
   height: 16px;
   background: linear-gradient(to right, 
@@ -76,9 +76,53 @@ body{
     #FF4400    
   );
   border: none;
-  
 }
-
+.colorGradient_temp {
+  width: 150px;
+  height: 16px;
+  background: linear-gradient(to right,
+      #6600FF,
+      #0066FF,
+      #00AAFF,
+      #00FFFF,
+      #00FFFF,
+      #00FFB3,
+      #00FF80,
+      #00FF4D,
+      #33FF00,
+      #80FF00,
+      #CCFF00,
+      #FFFF00,
+      #FFFF00,
+      #FFD700,
+      #FFA500,
+      #FF8000,
+      #FF0000
+    );
+  border: none;
+}
+.colorGradient_hum {
+  width: 150px;
+  height: 16px;
+  background: linear-gradient(to right,
+      #FFA500,
+      #FFD700,
+      #FFFF00,
+      #FFFF00,
+      #CCFF00,
+      #80FF00,
+      #33FF00,
+      #00FF4D,
+      #00FF80,
+      #00FFCC,
+      #00FFFF,
+      #00AAFF,
+      #00AAFF,
+      #3366FF,
+      #6600FF
+    );
+  border: none;
+}
 /* 3D ビュー側 */
 #viewerWrapper{
   position:relative;
