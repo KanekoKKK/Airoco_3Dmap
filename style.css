@@ -124,6 +124,7 @@ body{
   margin-top: 16px;         /* Three.jsとの間の余白 */
 }
 
+/* 三連ボタン */
 #buttonContainer button {
   padding: 10px 20px;
   background-color: #111;
