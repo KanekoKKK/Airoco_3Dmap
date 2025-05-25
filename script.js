@@ -313,7 +313,11 @@ function rendering() {
         for (let i = 0; i < parameters.length; i++) {
           if (selectedRoom == parameters[i].name) {
             writeRoomInfo(parameters[i]);
+            boxs[i].scale.set(1.1, 1.1, 1.1); // 拡大
+          } else {
+            boxs[i].scale.set(1, 1, 1); // 拡大リセット
           }
+          console.log(boxs[i]);
         }
       }
     } else {
