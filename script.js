@@ -1,6 +1,9 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Vector3 } from 'three';
+
 window.addEventListener("DOMContentLoaded", init);
-let cameraAngle = 0;
-const cameraRadius = 2000; // 必要ならお好みで調整
 /* データのリスト
 name: apiからのデータの主キー
 text: HTML表示用のテキスト
@@ -35,6 +38,7 @@ var controls;
 var canvasElement;
 
 function init() {
+  let updateTime;
   // -------------------- 初期設定 -------------------- //
   // レンダラーを作成
   canvasElement = document.querySelector('#myCanvas');
@@ -63,9 +67,16 @@ function init() {
   camera.position.set(0, 0, 2000); //カメラ位置
 
   // カメラコントローラーを作成
-  controls = new THREE.OrbitControls(camera, canvasElement);
-  controls.maxPolarAngle = Math.PI * 0.5; // 下から見えないようにする
-  controls.enableDamping = true;  // 滑らかな制御
+  controls = new OrbitControls(camera, canvasElement);
+  controls.autoRotate = true; // 自動回転  
+  controls.autoRotateSpeed = 2.0;
+  controls.target = new Vector3(-167.5, -75, 200); // 回転の中心
+  controls.enablePan = false; // パン(上下左右移動)を禁止
+  controls.maxPolarAngle = Math.PI * 0.5; // 鉛直方向の回転を禁止
+  controls.minPolarAngle = Math.PI * 0.5;
+  controls.maxDistance = 2000;  // 遠ざかることのできる距離
+  controls.minDistance = 1000 // 近づくことのできる距離
+  controls.enableDamping = true;  // マウス制御時の滑らかな制御
   controls.dampingFactor = 0.2;
 
   resize();
@@ -86,7 +97,7 @@ function init() {
   }
 
   // 3Dモデルの読み込み
-  const loader = new THREE.GLTFLoader();
+  const loader = new GLTFLoader();
   loader.load('R3.glb', function (gltf) {
     const model = gltf.scene;
     model.scale.set(500, 500, 500); // モデルのスケールを調整
@@ -105,6 +116,7 @@ function init() {
     });
 
     scene.add(model);
+
   });
   // -------------------- 初期設定 -------------------- //
 
@@ -119,7 +131,7 @@ function init() {
 
     var data = event.detail.data; // airocoからのデータ
     boxs.length = 0;  // boxs[]をリセット
-    for (var i = 0; i < parameters.length; i++) {
+    for (let i = 0; i < parameters.length; i++) {
       // parametersにdataを保存
       parameters[i].sensData = data[parameters[i].name];
       // sensDataの取り出し
@@ -136,8 +148,7 @@ function init() {
       box.name = parameters[i].name;
 
       // 色の変更
-      getColor(sensData);
-      box.material.color.set(color);
+      box.material.color.set(getColor(sensData));
 
       // boxの保存
       boxs.push(box);
@@ -158,11 +169,6 @@ function init() {
 
 // リアルタイムレンダリング
 function tick() {
- cameraAngle -= 0.003; // 回転速度
-   camera.position.x = Math.sin(cameraAngle) * cameraRadius;
-   camera.position.z = Math.cos(cameraAngle) * cameraRadius;
-   camera.lookAt("R3"); // オブジェクトを向く
-
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
@@ -174,20 +180,21 @@ function changeMode(inMode) {
   writeLegend(mode, inMode);  // 古いmode,新しいmode
   mode = inMode;
   // オブジェクトの色変更
-  for (i = 0; i < parameters.length; i++) {
+  for (let i = 0; i < parameters.length; i++) {
     const box = boxs[i];
     const param = parameters[i];
-    getColor(param.sensData);
-    box.material.color.set(color);
+    box.material.color.set(getColor(param.sensData));
   }
 }
 // -------------------- 色指定 -------------------- //
 function getColor(sensData) {
+  let color;
   switch (mode) {
     case "co2": color = colorByCo2(sensData.co2); break;
     case "temp": color = colorByTemp(sensData.temp); break;
     case "hum": color = colorByHum(sensData.hum); break;
   }
+  return color;
 
   // co2から色を決定
   function colorByCo2(co2) {
@@ -303,7 +310,7 @@ function rendering() {
         clickFlg = true;
         selectedRoom = obj.name;
         // roomInfo更新
-        for (i = 0; i < parameters.length; i++) {
+        for (let i = 0; i < parameters.length; i++) {
           if (selectedRoom == parameters[i].name) {
             writeRoomInfo(parameters[i]);
           }
@@ -339,6 +346,7 @@ function writeRoomInfo(param) {
 // 凡例(legend)
 function writeLegend(oldMode, newMode) {
   // legend_text
+  let legendText;
   switch(newMode){
     case "co2": legendText = "[ CO2 concentration ]"; break;
     case "temp": legendText = "[    Temperature    ]"; break;
@@ -347,8 +355,8 @@ function writeLegend(oldMode, newMode) {
   document.getElementById('legend_text').textContent = legendText;
   // colorGradient
   var element = document.getElementById('colorGradient'); // 変更したいid
-  oldClass = "colorGradient_" + oldMode;
-  newClass = "colorGradient_" + newMode;
+  let oldClass = "colorGradient_" + oldMode;
+  let newClass = "colorGradient_" + newMode;
   element.classList.remove(oldClass); // クラス名の削除
   element.classList.add(newClass); // クラス名の追加
 }
