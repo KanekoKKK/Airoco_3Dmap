@@ -18,12 +18,12 @@ sensData:
 */
 var parameters = [
   { "name": "401", "text": "ROOM 401", "position": [-310, 75, 125], "sensData": null },
-  { "name": "301", "text": "ROOM 301", "position": [-310, -75, 40], "sensData": null },
-  { "name": "3F", "text": "3F EV", "position": [-25, -75, 325], "sensData": null },
-  { "name": "4F", "text": "4F EV", "position": [-25, 75, 325], "sensData": null },
-  { "name": "403", "text": "ROOM 403", "position": [-310, 75, -80], "sensData": null },
-  { "name": "B1F", "text": "B1F EV", "position": [-25, -525, 325], "sensData": null },
-  { "name": "1F", "text": "1F EV", "position": [-25, -375, 325], "sensData": null }
+  { "name": "301", "text": "ROOM 301", "position": [-310, -75, 45],"size": [155, 120, 325], "sensData": null },
+  { "name": "3F", "text": "3F EV", "position": [-25, -75, 320], "sensData": null },
+  { "name": "4F", "text": "4F EV", "position": [-25, 75, 320], "sensData": null },
+  { "name": "403", "text": "ROOM 403", "position": [-310, 75, -85], "sensData": null },
+  { "name": "B1F", "text": "B1F EV", "position": [-25, -525, 320], "sensData": null },
+  { "name": "1F", "text": "1F EV", "position": [-25, -375, 320], "sensData": null }
 ];
 
 var mode = "co2";  // どのセンサの値を使用するか(co2,temp,hum)
@@ -127,8 +127,10 @@ function init() {
 
       // 各オブジェクトの生成
       const [x, y, z] = parameters[i].position;
-      const geometry = new THREE.BoxGeometry(125, 125, 125);
-      const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.9});
+
+      const [sx, sy, sz] = parameters[i].size || [155, 120, 180];
+      const geometry = new THREE.BoxGeometry(sx, sy, sz);
+      const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.9 });
       const box = new THREE.Mesh(geometry, material);
       box.position.set(x, y, z);
       box.name = parameters[i].name;
