@@ -36,6 +36,8 @@ var camera;
 var renderer;
 var controls;
 var canvasElement;
+let R3model;
+let EVmodel;
 
 function init() {
   let updateTime;
@@ -96,28 +98,52 @@ function init() {
     camera.updateProjectionMatrix();
   }
 
-  // 3Dモデルの読み込み
-  const loader = new GLTFLoader();
-  loader.load('R3.glb', function (gltf) {
-    const model = gltf.scene;
-    model.scale.set(500, 500, 500); // モデルのスケールを調整
-    model.name = "R3";
+  // R3モデルの読み込み
+  const R3loader = new GLTFLoader();
+  R3loader.load('R3.glb', function (gltf) {
+    R3model = gltf.scene;
+    R3model.scale.set(500, 500, 500); // モデルのスケールを調整
+    R3model.name = "R3";
 
-    model.traverse((child) => {
+    R3model.traverse((child) => {
       if (child.isMesh) {
         child.material = new THREE.MeshStandardMaterial({
           color: 0x9999ff,
           roughness: 0.4,
           metalness: 0.1,
           transparent: true,
-          opacity: 0.5,
+          opacity: 0.8,
+        });
+      }
+    })
+    scene.add(R3model);
+  });
+
+  // EVモデルの読み込み
+  const evloader = new GLTFLoader();
+  evloader.load('EV.glb', function (gltf) {
+    EVmodel = gltf.scene;
+    EVmodel.scale.set(500, 500, 500); // モデルのスケールを調整
+    EVmodel.name = "EV";
+
+    EVmodel.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: 0x9999ff,
+          roughness: 0.4,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 0.8,
         });
       }
     });
-
-    scene.add(model);
-
+    scene.add(EVmodel);
   });
+
+  setControll();
+  rendering();
+  tick();
+
   // -------------------- 初期設定 -------------------- //
 
   // -------------------- データの取得(イベント) -------------------- //
@@ -154,12 +180,8 @@ function init() {
       boxs.push(box);
       scene.add(box);
     }
-    // 初回データ取得後にレンダリングを開始
-    tick();
   }, );
   // -------------------- データの取得(イベント) -------------------- //
-  setControll();
-  rendering();
 
   // モード変更
   document.getElementById("btn_co2").addEventListener("click", function () { changeMode("co2") });
@@ -167,14 +189,25 @@ function init() {
   document.getElementById("btn_hum").addEventListener("click", function () { changeMode("hum") });
 }
 
-// リアルタイムレンダリング
-function tick() {
-  controls.update();
-  renderer.render(scene, camera);
-  requestAnimationFrame(tick);
-}
+// -------------------- リアルタイムレンダリング (メインループ) -------------------- //
+let timeEV = 0; // EVモデル用のアニメーション時間
+const speedEV = 0.01; // EVモデルの移動速度
 
-// モード変更
+function tick() {
+  requestAnimationFrame(tick);
+
+  // EVアニメーション
+  if (EVmodel) {
+    EVmodel.position.y = Math.sin(timeEV) * 300 + 300;
+    timeEV += speedEV;
+  }
+
+  controls.update();
+  renderer.render(scene, camera); //sceneを更新
+}
+// -------------------- リアルタイムレンダリング (メインループ) -------------------- //
+
+// -------------------- モード変更 -------------------- //
 function changeMode(inMode) {
   // 凡例変更
   writeLegend(mode, inMode);  // 古いmode,新しいmode
@@ -186,6 +219,8 @@ function changeMode(inMode) {
     box.material.color.set(getColor(param.sensData));
   }
 }
+// -------------------- モード変更 -------------------- //
+
 // -------------------- 色指定 -------------------- //
 function getColor(sensData) {
   let color;
@@ -255,6 +290,7 @@ function getColor(sensData) {
   }
 }
 // -------------------- 色指定 -------------------- //
+
 // -------------------- マウス操作 -------------------- //
 let mouse;
 let raycaster;
@@ -317,7 +353,6 @@ function rendering() {
           } else {
             boxs[i].scale.set(1, 1, 1); // 拡大リセット
           }
-          console.log(boxs[i]);
         }
       }
     } else {
@@ -330,7 +365,8 @@ function rendering() {
   renderer.render(scene, camera);
 }
 // -------------------- マウス操作 -------------------- //
-// -------------------- HTML編集 -------------------- //
+
+/ -------------------- HTML編集 -------------------- //
 // 更新日時(lastUpdate)
 function writeLastUpdate(event) {
     updateTime = event.detail.updateTime;
