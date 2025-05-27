@@ -20,13 +20,13 @@ sensData:
   temp: 温度
 */
 var parameters = [
-  { "name": "401", "text": "ROOM 401", "position": [-310, 75, 125], "sensData": null },
-  { "name": "301", "text": "ROOM 301", "position": [-310, -75, 45],"size": [155, 120, 325], "sensData": null },
-  { "name": "3F", "text": "3F EV", "position": [-25, -75, 320], "sensData": null },
-  { "name": "4F", "text": "4F EV", "position": [-25, 75, 320], "sensData": null },
-  { "name": "403", "text": "ROOM 403", "position": [-310, 75, -85], "sensData": null },
-  { "name": "B1F", "text": "B1F EV", "position": [-25, -525, 320], "sensData": null },
-  { "name": "1F", "text": "1F EV", "position": [-25, -375, 320], "sensData": null }
+  { "name": "401", "text": "ROOM 401", "position": [-340,  72, 100], "size": [150, 115, 175], "rotation": [0, 0.3, 0], "sensData": null },
+  { "name": "403", "text": "ROOM 403", "position": [-400,  72, -95], "size": [150, 115, 175], "rotation": [0, 0.3, 0], "sensData": null },
+  { "name": "301", "text": "ROOM 301", "position": [-363, -78,  28], "size": [150, 115, 315], "rotation": [0, 0.3, 0], "sensData": null },
+  { "name": "4F",  "text": "4F EV",    "position": [-23,   72,  25], "size": [150, 115, 175], "rotation": [0, 0, 0], "sensData": null },
+  { "name": "3F",  "text": "3F EV",    "position": [-23,  -78,  25], "size": [150, 115, 175], "rotation": [0, 0, 0], "sensData": null },
+  { "name": "1F",  "text": "1F EV",    "position": [-23, -378,  25], "size": [150, 115, 175], "rotation": [0, 0, 0], "sensData": null },
+  { "name": "B1F", "text": "B1F EV",   "position": [-23, -528,  25], "size": [150, 115, 175], "rotation": [0, 0, 0], "sensData": null },
 ];
 
 var mode = "co2";  // どのセンサの値を使用するか(co2,temp,hum)
@@ -100,7 +100,7 @@ function init() {
 
   // R3モデルの読み込み
   const R3loader = new GLTFLoader();
-  R3loader.load('R3.glb', function (gltf) {
+  R3loader.load('R3_v3.glb', function (gltf) {
     R3model = gltf.scene;
     R3model.scale.set(500, 500, 500); // モデルのスケールを調整
     R3model.name = "R3";
@@ -165,12 +165,13 @@ function init() {
 
       // 各オブジェクトの生成
       const [x, y, z] = parameters[i].position;
-
-      const [sx, sy, sz] = parameters[i].size || [155, 120, 180];
+      const [sx, sy, sz] = parameters[i].size;
+      const [rx, ry, rz] = parameters[i].rotation;
       const geometry = new THREE.BoxGeometry(sx, sy, sz);
       const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.9 });
       const box = new THREE.Mesh(geometry, material);
       box.position.set(x, y, z);
+      box.rotation.set(rx, ry, rz);
       box.name = parameters[i].name;
 
       // 色の変更
