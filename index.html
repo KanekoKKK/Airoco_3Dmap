@@ -32,7 +32,14 @@
     <h1 class="title">Meijo University   R-3 Monitoring System</h1>
 
     <!-- リロードボタン -->
-    <button id="reloadBtn" onclick="window.location.reload(true);"><strong>Reload</strong></button>
+    <button id="reloadBtn">
+      <!-- 回転アイコン（24×24） -->
+      <svg id="reloadIcon" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M12 4V1L8 5l4 4V6c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6H4c0 4.4 3.6 8 8 8s8-3.6 8-8-3.6-8-8-8z"
+              fill="currentColor"/>
+      </svg>
+      <strong>Reload</strong>
+    </button>
   </header>
 
     <!-- <div id="isFetchSuccess">    > Fetch : SUCCESS</div> -->
@@ -73,15 +80,14 @@
       <div id="howToUse" class="card">
         <h2 class="usageTitle">[ Usage ]</h2>
         <div class="usageList">
-            <p>- You can rotate and move the camera using your mouse.</p>
-            <p>- Each colored cube represents informations about a specific room.</p>
-            <p>- Hovering over a cube displays detailed information.</p>
-            <p>- Press the <strong>Reload</strong> button to update to the latest data.</p>
+            <li>Drag with the mouse to rotate / pan the building model.</li>
+            <li>The colored cubes show <strong>CO₂ concentration</strong> by default.<br>
+                Use the CO2 / Temp / Hum buttons to switch sensors.</li>
+            <li>Hover a cube to see the current value for that room.</li>
+            <li>Click <strong>Reload</strong> to fetch the latest sensor data.</li>
         </div>
       </div>
       
-      <!-- 更新時刻 -->
-      <div id="lastUpdate"></div>
 
       <!-- 三連ボタン -->
       <div id="buttonContainer">
@@ -89,6 +95,10 @@
         <button id="btn_temp">temp</button>  <!-- 温度 -->
         <button id="btn_hum">hum</button>   <!-- 湿度 -->
       </div>
+
+      <!-- 更新時刻 -->
+      <div id="lastUpdate"></div>
+
       <div id="footerInfo">© 2025 Kato & Kaneko/ v0.1</div>
     </aside>
   </main>

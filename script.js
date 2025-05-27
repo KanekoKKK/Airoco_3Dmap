@@ -188,6 +188,7 @@ function init() {
   document.getElementById("btn_co2").addEventListener("click", function () { changeMode("co2") });
   document.getElementById("btn_temp").addEventListener("click", function () { changeMode("temp") });
   document.getElementById("btn_hum").addEventListener("click", function () { changeMode("hum") });
+  document.getElementById('btn_co2').classList.add('selected');
 }
 
 // -------------------- リアルタイムレンダリング (メインループ) -------------------- //
@@ -213,6 +214,10 @@ function changeMode(inMode) {
   // 凡例変更
   writeLegend(mode, inMode);  // 古いmode,新しいmode
   mode = inMode;
+  //選択しているボタンの枠を強調
+  document.querySelectorAll('#buttonContainer button')
+          .forEach(btn => btn.classList.remove('selected'));
+  document.getElementById('btn_'+inMode).classList.add('selected');
   // オブジェクトの色変更
   for (let i = 0; i < parameters.length; i++) {
     const box = boxs[i];
@@ -375,7 +380,7 @@ function writeLastUpdate(event) {
     updateTime = updateTime.replace("GMT+0900 (日本標準時)", "JST");
     updateTime = "    > Last updated: " + updateTime;
     document.getElementById('lastUpdate').textContent = updateTime;
-
+    
 }
 // センサ情報(roomInfo)
 function writeRoomInfo(param) {
@@ -402,3 +407,10 @@ function writeLegend(oldMode, newMode) {
   element.classList.add(newClass); // クラス名の追加
 }
 // -------------------- HTML編集 -------------------- //
+
+const reloadBtn  = document.getElementById('reloadBtn');
+const reloadIcon = document.getElementById('reloadIcon');
+reloadBtn.addEventListener('click', () => {
+  reloadIcon.classList.add('rotate');          // 回り始め
+  setTimeout(() => window.location.reload(true), 100);
+});
