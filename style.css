@@ -23,13 +23,21 @@ body{
 #topBar    { display: flex; justify-content: space-between; align-items: center;
              padding: .5rem 1rem; background: #111; border-bottom: 2px solid #fff; }
 #topBar h1 { font-size: 1.6rem; }
-#reloadBtn { background: #111; border: 2px solid #111; color: #fff;
-             padding: .4rem 1rem; cursor: pointer; 
-            font-family:'Share Tech Mono',monospace;
-            font-size: 30px; }
+#reloadBtn{
+  display:inline-flex;           
+  align-items:center;             
+  gap:8px;                        
+  background:#111;border:2px solid #111;color:#fff;
+  padding:.4rem 1rem;font-size:30px;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;
+}
+
+.reloadIcon{width:1.25em;height:1.25em;} 
 
 /* 更新時刻 */
-#lastUpdate { padding: .4rem 1rem; font-size: .9rem; background: #111; }
+#lastUpdate { padding: .4rem 1rem; font-size: .9rem; background: #111; 
+              margin-top:24px; font-size:.9rem;}
+
 #isFetchSuccess { padding: .4rem 1rem; font-size: .9rem; background: #111; }
 
 /*にぎやかし */
@@ -44,6 +52,7 @@ body{
 
 
 #viewerWrapper #roomInfo{
+  margin-top: 16px;
   position:absolute;         
   top:16px;                 
   right:16px;
@@ -53,6 +62,12 @@ body{
   z-index:10;           
   border: none;   
 }
+#roomInfo h2{
+  text-align: center;
+}
+
+
+
 
 #roomInfo::before {
   content: "";
@@ -189,31 +204,44 @@ body{
 }
 #footerInfo{margin-top:auto;font-size:.8rem;text-align:center;opacity:.6;}
 
+#howToUse{
+  margin-top: 24px;  
+}
+
 /* 使い方タイトル */
 .usageTitle {
   text-align: center;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: bold;
+  margin-bottom:14px;
 }
 
-/* 使い方文章部分 */
-.usageList p {
-  margin: 0.4rem 0;
-  text-indent: 0;
-  padding-left: 0;
+
+.usageList { list-style: none; margin: 0; padding: 0; }
+.usageList li { 
+  margin: .4rem 0 .4rem 1.2rem;
+  position: relative;
+  line-height:1.6; 
+  margin-bottom:4px;
+  }
+.usageList li::before{
+  content: "–";
+  position: absolute; left: -1.2rem;
+  font-weight: bold;
 }
+
 
 #buttonContainer {
   display: flex;
-  justify-content: center;  /* または space-between, space-around など */
-  gap: 16px;                /* ボタンの間の余白 */
-  margin-top: 16px;         /* Three.jsとの間の余白 */
+  justify-content: center;  
+  gap: 32px;                
+  margin-top: 20px;         
 }
 
 /* 三連ボタン */
 #buttonContainer button {
-  padding: 10px 20px;
+  padding: 10px 24px;
   background-color: #111;
   color: white;
   border: 1px solid #FFF;
@@ -226,6 +254,13 @@ body{
 #buttonContainer button:hover {
   background-color: #111;
 }
+
+#buttonContainer button.selected{
+  outline: 3px double #fff;
+  outline-offset: -2px;  
+}
+
+#buttonContainer button:hover{ background:#333; }
 
 
 /* レスポンシブ—モバイルでは 1 カラム */
